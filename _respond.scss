@@ -1,0 +1,214 @@
+/* Respond v1.0 | 01.07.2013 | lukaszgrolik.pl | MIT License */
+
+// "public"
+// =============================================================================
+
+// mixins
+// -----------------------------------------------------------------------------
+
+// overwrites the default Media Type, which is "all"
+@mixin respond-set-media-type($__media-type) {
+  $respond-media-type: $__media-type;
+}
+
+// initializes a list of breakpoint-expressions
+@mixin respond-init($__bp-exp-list...) {
+  $respond-bp-exp-list: $__bp-exp-list;
+}
+
+// includes Media Query according to the given argument (a list of breakpoint-names)
+@mixin respond($__bp-name-list) {
+  $-media-condition-list: respond-get-media-condition-list($__bp-name-list);
+
+  @media #{$respond-media-type} and #{$-media-condition-list} {
+    @content;
+  }
+}
+
+// all following mixins -
+// - not, gt, gte, lt, lte -
+// - include Media Query according to the given argument (breakpoint-name)
+
+// contains the "not" Media Query keyword
+@mixin respond-not($__bp-name) {
+  $-media-condition: respond-get-media-condition($__bp-name);
+
+  @media not #{$respond-media-type} and #{$-media-condition} {
+    @content;
+  }
+}
+
+// "greater than" a breakpoint-maximum
+@mixin respond-gt($__bp-name) {
+  $-min: respond-get-max($__bp-name) + 1px;
+
+  @media #{$respond-media-type} and (min-width: $-min) {
+    @content;
+  }
+}
+
+// "greater than" a breakpoint-maximum or "equal to" a breakpoint-range
+@mixin respond-gte($__bp-name) {
+  $-min: respond-get-min($__bp-name);
+
+  @media #{$respond-media-type} and (min-width: $-min) {
+    @content;
+  }
+}
+
+// "less than" a breakpoint-minimum
+@mixin respond-lt($__bp-name) {
+  $-max: respond-get-min($__bp-name) - 1px;
+
+  @media #{$respond-media-type} and (max-width: $-max) {
+    @content;
+  }
+}
+
+// "less than" a breakpoint-minimum or "equal to" a breakpoint-range
+@mixin respond-lte($__bp-name) {
+  $-max: respond-get-max($__bp-name);
+
+  @media #{$respond-media-type} and (max-width: $-max) {
+    @content;
+  }
+}
+
+// 
+// special Media Query mixins
+// 
+
+// WebKit only
+@mixin respond-webkit {
+  @media #{$respond-media-type} and (-webkit-min-device-pixel-ratio:0) {
+    @content;
+  }
+}
+
+// IE9 & IE10 only
+@mixin respond-ie9-10 {
+  @media #{$respond-media-type} and (min-width:0\0) {  
+    @content; 
+  } 
+}
+
+// IE10 & IE11 only
+@mixin respond-ie10-11 {
+  @media #{$respond-media-type} and (-ms-high-contrast: active), (-ms-high-contrast: none) {  
+    @content; 
+  }
+}
+
+// "private"
+// =============================================================================
+
+// global variables
+// -----------------------------------------------------------------------------
+
+$respond-bp-exp-list: ();
+$respond-media-type: all;
+
+// functions
+// -----------------------------------------------------------------------------
+
+// returns a combination of single media conditions separated by a comma as a string,
+// e.g. "(min-width: 240px) and (max-width: 480px), (min-width: 960px)"
+@function respond-get-media-condition-list($__bp-name-list) {
+  $-media-condition-list: '';
+
+  @each $name in $__bp-name-list {
+    @each $exp in $respond-bp-exp-list {
+      @if $name == respond-get-name($exp) {
+        $-comma: '';
+
+        @if $-media-condition-list != '' {
+          $-comma: ', ';
+        }
+
+        $-media-condition: respond-get-media-condition($name);
+        $-media-condition-list: $-media-condition-list + $-comma + $-media-condition;
+      }
+    }
+  }
+
+  @return $-media-condition-list;
+}
+
+// returns a single media condition as a string,
+// e.g. "(min-width: 300px) and (max-width: 1024px)"
+@function respond-get-media-condition($__bp-name) {
+  $-min: respond-get-min($__bp-name);
+  $-max: respond-get-max($__bp-name);
+
+  $-media-condition: "(min-width: #{$-min})";
+        
+  @if respond-is-max-finite($-max) {
+    $-media-condition: $-media-condition + " and (max-width: #{$-max})";
+  }
+
+  @return $-media-condition;
+}
+
+// returns a breakpoint-name of the given breakpoint-expression
+@function respond-get-name($__bp-exp) {
+  @return nth($__bp-exp, 1);
+}
+
+// returns a breakpoint-minimum of the given breakpoint-name
+// in a breakpoint-expression
+@function respond-get-min($__bp-name) {
+  $-bp-exp: respond-get-exp($__bp-name);
+
+  @return nth($-bp-exp, 2);
+}
+
+// returns a breakpoint-maximum of the given breakpoint-name
+// in a breakpoint-expression
+@function respond-get-max($__bp-name) {
+  $-bp-exp: respond-get-exp($__bp-name);
+  $-bp-exp-position: index($respond-bp-exp-list, $-bp-exp);
+  $-is-last-bp-exp: $-bp-exp-position != length($respond-bp-exp-list);
+
+  @if length($-bp-exp) == 3 {
+    @return nth($-bp-exp, 3);
+  } @else if $-is-last-bp-exp {
+    @return respond-get-min(respond-get-next-name($__bp-name)) - 1;
+  } @else {
+    @return false;
+  }
+}
+
+// returns "true" if the the given breakpoint-maximum is finite
+@function respond-is-max-finite($__bp-max) {
+  @return $__bp-max and $__bp-max != -1;
+}
+
+// returns a breakpoint-expression which contains the given breakpoint-name
+@function respond-get-exp($__bp-name) {
+  @each $exp in $respond-bp-exp-list {
+    @if $__bp-name == respond-get-name($exp) {
+      @return $exp;
+    }
+  }
+
+  @return false;
+}
+
+// returns the next breakpoint-expression according to the given breakpoint-expression
+// in a list of breakpoint-expressions
+@function respond-get-next-exp($__bp-exp) {
+  $-bp-exp-next-position: index($respond-bp-exp-list, $__bp-exp) + 1;
+  $-bp-exp-next: nth($respond-bp-exp-list, $-bp-exp-next-position);
+
+  @return $-bp-exp-next;
+}
+
+// returns the next breakpoint-name according to the given breakpoint-name
+// in a list of breakpoint-expressions
+@function respond-get-next-name($__bp-name) {
+  $-bp-exp: respond-get-exp($__bp-name);
+  $-bp-exp-next: respond-get-next-exp($-bp-exp);
+  $-bp-name-next: respond-get-name($-bp-exp-next);
+
+  @return $-bp-name-next;
+}
