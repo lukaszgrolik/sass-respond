@@ -1,6 +1,6 @@
-# Respond
+# Sass-respond
 
-Respond is a [Sass](https://github.com/nex3/sass)-based tool that simplifies dealing with CSS3 Media Queries.
+Sass-respond is a [Sass](https://github.com/nex3/sass)-based tool that simplifies dealing with CSS3 Media Queries.
 
 ### Requirements
 
@@ -8,18 +8,23 @@ Sass 3.2.0+
 
 ### Browser support
 
-Every browser which supports CSS3 Media Queries supports Respond as well. See compatibility table: http://caniuse.com/#feat=css-mediaqueries
+Every browser which supports CSS3 Media Queries supports Sass-respond as well. See compatibility table: http://caniuse.com/#feat=css-mediaqueries
+
+## Installation
+
+### Bower
+
+- Terminal: `bower install sass-respond`
+- SCSS: `@import 'path/to/bower_components/sass-respond/respond';`
+
+### Vanilla Sass
+
+- Copy `_respond.scss` into your project
+- SCSS: `@import 'path/to/respond';`
 
 ## Getting started
 
-1. Download & put `_respond.scss` partial wherever you want in your project
-2. Import:
-
-   ```scss
-   @import 'path/to/respond';
-   ```
-
-3. Set *breakpoints*:
+1. Set *breakpoints*:
 
    ```scss
    @include respond-init(
@@ -29,7 +34,7 @@ Every browser which supports CSS3 Media Queries supports Respond as well. See co
    );
    ```
 
-4. Include Media Queries:
+2. Include Media Queries:
 
    ```scss
    @include respond(small) {
@@ -39,11 +44,11 @@ Every browser which supports CSS3 Media Queries supports Respond as well. See co
 
 ## Naming conventions
 
-### Respond's *breakpoint-expression* definition:
+### Sass-respond's *breakpoint-expression* definition:
 
 ```
 (papa-bear 640px 720px) - bp-exp (breakpoint-expression)
- papa-bear              - bp-name (breakpoint-name), in a display area's width 
+ papa-bear              - bp-name (breakpoint-name), in a display area's width
                           context also called a "breakpoint-range"
            640px 720px  - bp-range (breakpoint-range)
            640px        - bp-min (breakpoint-minimum)
@@ -52,7 +57,7 @@ Every browser which supports CSS3 Media Queries supports Respond as well. See co
  papa-bear       720px  - bp (breakpoint) at a "breakpoint-maximum"
 ```
 
-### Respond's lists definitions:
+### Sass-respond's lists definitions:
 
 ```
 (lorem 640px 720px, ipsum 240px 480px) - bp-exp-list (breakpoint-expression-list,
@@ -152,7 +157,7 @@ Special mixins take no arguments.
 ```
 ### Setting Media Type
 
-Respond includes Media Queries with the `all` Media Type by default. `respond-set-media-type()` mixin takes a Media Type keyword as an argument to change this behavior, for example:
+Sass-respond includes Media Queries with the `all` Media Type by default. `respond-set-media-type()` mixin takes a Media Type keyword as an argument to change this behavior, for example:
 
 ```scss
 @include respond-set-media-type(print);
@@ -166,10 +171,9 @@ or:
 
 ## License
 
-Respond is released under the MIT License.
+Sass-respond is released under the MIT License.
 
-Copyright 2013 [Łukasz Grolik](http://lukaszgrolik.pl)
-
+```
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
 "Software"), to deal in the Software without restriction, including
@@ -188,3 +192,4 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
