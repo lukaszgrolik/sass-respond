@@ -1,0 +1,8 @@
+{
+  "name": "sass-respond",
+  "version": "0.1.0",
+  "main": "_respond.scss",
+  "description": "Simplifies dealing with CSS3 Media Queries",
+  "keywords": ["css-media-query", "rwd", "responsive"],
+  "license": "MIT"
+}
